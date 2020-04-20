@@ -176,7 +176,6 @@ for offset in range(0, 48):  ##24h = 48 segments
 
 
 
-
 font = ImageFont.truetype(FredokaOne, 60)
 message = "{0:.1f}".format(current_price) + "p"
 w, h = font.getsize(message)
@@ -240,7 +239,7 @@ chart_base_loc = 104  # location of the bottom of the chart on screen in pixels
 number_of_vals_to_display = 48 # 36 half hours = 18 hours
 
 # plot the graph
-lowest_price_next_24h = min(i for i in prices if i > 0)
+lowest_price_next_24h = min(i for i in prices) #changed to allow negative prices
 
 print("lowest price Position:", prices.index(lowest_price_next_24h))
 print("low Value:", lowest_price_next_24h)
@@ -287,7 +286,7 @@ font = ImageFont.truetype(FredokaOne, 15)
 draw.text((right_column,90), time_of_cheapest_formatted, inky_display.BLACK, font)
 
 # render the actual image onto the display
-# uncomment the next line to flip image by 180 degrees
-# img=img.rotate(180)
+# (un)comment the next line to flip image by 180 degrees
+img=img.rotate(180)
 inky_display.set_image(img)
 inky_display.show()
