@@ -19,6 +19,13 @@ conn = sqlite3.connect('octoprice.sqlite')
 cur = conn.cursor()
 import datetime
 
+#basic DST functionality added by octonaut
+#test code
+import time
+if time.localtime().tm_isdst==1: #if the local time of your raspberry pi in in DST
+	dst_offset=-60 # 60 minute offset for DST
+else: dst_offset=0 # otherwise no offset
+
 ##  -- Display type = red. Change below if you have the yellow
 inky_display = InkyPHAT("red")
 ## --   ----------------------------------------------------
@@ -28,7 +35,7 @@ img = Image.new("P", (inky_display.WIDTH, inky_display.HEIGHT))
 draw = ImageDraw.Draw(img)
 
 # find current time and convert to year month day etc
-the_now = datetime.datetime.now()
+the_now = datetime.datetime.now()+datetime.timedelta(minutes=dst_offset) #dst offset added
 the_year = the_now.year
 the_month = the_now.month
 the_hour = the_now.hour
@@ -55,7 +62,7 @@ current_price = row[5] # literally this is hardcoded tuple. DONT ADD ANY EXTRA F
 
 # Find Next Price
 # find current time and convert to year month day etc
-the_now = datetime.datetime.now()
+the_now = datetime.datetime.now()+datetime.timedelta(minutes=dst_offset) #dst offset added
 now_plus_10 = the_now + datetime.timedelta(minutes = 30)
 the_year = now_plus_10.year
 the_month = now_plus_10.month
@@ -85,7 +92,7 @@ next_price = row[5] # literally this is peak tuple. DONT ADD ANY EXTRA FIELDS TO
 
 # Find Next+1 Price
 # find current time and convert to year month day etc
-the_now = datetime.datetime.now()
+the_now = datetime.datetime.now()+datetime.timedelta(minutes=dst_offset) #dst offset added
 now_plus_10 = the_now + datetime.timedelta(minutes = 60)
 the_year = now_plus_10.year
 the_month = now_plus_10.month
@@ -117,7 +124,7 @@ nextp1_price = row[5] # literally this is peak tuple. DONT ADD ANY EXTRA FIELDS 
 
 # Find Next+2 Price
 # find current time and convert to year month day etc
-the_now = datetime.datetime.now()
+the_now = datetime.datetime.now()+datetime.timedelta(minutes=dst_offset) #dst offset added
 now_plus_10 = the_now + datetime.timedelta(minutes = 90)
 the_year = now_plus_10.year
 the_month = now_plus_10.month
@@ -146,7 +153,7 @@ nextp2_price = row[5] # literally this is peak tuple. DONT ADD ANY EXTRA FIELDS 
 prices = []
 for offset in range(0, 48):  ##24h = 48 segments
 	min_offset = 30 * offset
-	the_now = datetime.datetime.now()
+	the_now = datetime.datetime.now()+datetime.timedelta(minutes=dst_offset) #dst offset added
 	now_plus_offset = the_now + datetime.timedelta(minutes=min_offset)
 	the_year = now_plus_offset.year
 	the_month = now_plus_offset.month
@@ -272,7 +279,7 @@ draw.text((right_column,75), msg, inky_display.BLACK, font)
 # because it's literally just adding n * 30 mins!
 # could in future add some code to round to 30 mins increments but it works for now.
 min_offset = prices.index(lowest_price_next_24h) * 30
-time_of_cheapest = the_now + datetime.timedelta(minutes=min_offset)
+time_of_cheapest = the_now - datetime.timedelta(minutes=dst_offset) + datetime.timedelta(minutes=min_offset)
 print("cheapest at " + str(time_of_cheapest))
 print("which is: "+ str(time_of_cheapest.time())[0:5])
 time_of_cheapest_formatted = "at " + (str(time_of_cheapest.time())[0:5])
@@ -280,5 +287,7 @@ font = ImageFont.truetype(FredokaOne, 15)
 draw.text((right_column,90), time_of_cheapest_formatted, inky_display.BLACK, font)
 
 # render the actual image onto the display
+# uncomment the next line to flip image by 180 degrees
+# img=img.rotate(180)
 inky_display.set_image(img)
 inky_display.show()
