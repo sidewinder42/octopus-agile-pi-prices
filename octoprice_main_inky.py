@@ -287,6 +287,6 @@ draw.text((right_column,90), time_of_cheapest_formatted, inky_display.BLACK, fon
 
 # render the actual image onto the display
 # (un)comment the next line to flip image by 180 degrees
-img=img.rotate(180)
+# img=img.rotate(180)
 inky_display.set_image(img)
 inky_display.show()
