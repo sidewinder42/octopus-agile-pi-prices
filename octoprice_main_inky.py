@@ -169,7 +169,7 @@ for offset in range(0, 48):  ##24h = 48 segments
 	# get price
 	row = cur.fetchone()
 	if row is None:
-		prices.append(0) # we don't have that price yet!
+		prices.append(-10000) # we don't have that price yet!
 	else:
 		prices.append(row[5])
 
@@ -239,7 +239,7 @@ chart_base_loc = 104  # location of the bottom of the chart on screen in pixels
 number_of_vals_to_display = 48 # 36 half hours = 18 hours
 
 # plot the graph
-lowest_price_next_24h = min(i for i in prices) #changed to allow negative prices
+lowest_price_next_24h = min(i for i in prices if i > -9999) #changed to allow negative prices
 
 print("lowest price Position:", prices.index(lowest_price_next_24h))
 print("low Value:", lowest_price_next_24h)
